@@ -35,6 +35,35 @@ describe('regedit', function () {
 	
 	})
 
+	it('special characters in key names - #22', function (done) {
+		
+		key += 'nbi-nb-base-8.0.2.0.201411181905'
+
+		index.createKey(key, function (err) {
+			if (err) return done(err)
+
+			var values = {}
+
+			values[key] = { 'valName': { value: key, type: 'REG_SZ' }}
+
+			index.putValue(values, function (err) {
+				if (err) return done(err)
+
+				index.list(key, function(err, results) {
+					if (err) return done(err)
+
+					results.should.have.property(key)
+					.which.have.property('values')
+					.which.have.property('valName')
+					.which.have.property('value', key)
+
+					done()
+				})
+			})
+		})
+	
+	})
+
 	beforeEach(function () {
 		key = baseKey + Date.now()
 	})
